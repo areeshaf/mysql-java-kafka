@@ -8,27 +8,22 @@ public class Stud {
 
     @Id
     private String Stud_id;
-    private String Stud_name;
     private String Stud_status;
 
     public String getStud_id() {
         return Stud_id;
     }
 
-    public Stud() {
+    public Stud(String key,String value) {
+        this.Stud_id=key;
+        this.Stud_status = value;
     }
 
     public void setStud_id(String stud_id) {
         Stud_id = stud_id;
     }
 
-    public String getStud_name() {
-        return Stud_name;
-    }
 
-    public void setStud_name(String stud_name) {
-        Stud_name = stud_name;
-    }
 
     public String getStud_status() {
         return Stud_status;

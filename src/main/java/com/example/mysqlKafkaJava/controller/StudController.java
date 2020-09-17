@@ -1,5 +1,6 @@
 package com.example.mysqlKafkaJava.controller;
 
+import com.example.mysqlKafkaJava.model.Stud;
 import com.example.mysqlKafkaJava.repository.StudRepo;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -10,6 +11,7 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Properties;
@@ -18,20 +20,27 @@ import java.util.Properties;
 public class StudController {
 
     @Autowired
+    static
     StudRepo studRepo;
 
     public static Topology createTopology(){
         StreamsBuilder builder = new StreamsBuilder();
         // 1 - stream from Kafka
 
-        KStream<String, String> textLines = builder.stream("record-input-topic");
+       // Stud student = new Stud();
+        KStream<String, String> textLines = builder.stream("spring-input-topicc");
         KStream<String, String> wordCounts = textLines.filter((key, value) -> value.contains("Pass")== true);
 
-        wordCounts.to("record-output-topic", Produced.with(Serdes.String(), Serdes.String()));
+        wordCounts.to("spring-output-topicc", Produced.with(Serdes.String(), Serdes.String()));
+
+        wordCounts.foreach((key,value) -> new Stud(key,value));
+
+
         return builder.build();
     }
 
-    public void home(){
+
+    public void home(Stud stud){
 
         Properties properties = new Properties();
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "record-application");
@@ -43,6 +52,7 @@ public class StudController {
         //RecordApp recordApp = new RecordApp();
         KafkaStreams streams = new KafkaStreams(StudController.createTopology(), properties);
         streams.start();
+        studRepo.save(stud);
 
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
