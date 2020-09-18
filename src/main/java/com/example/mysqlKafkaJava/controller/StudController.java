@@ -20,7 +20,6 @@ import java.util.Properties;
 public class StudController {
 
     @Autowired
-    static
     StudRepo studRepo;
 
     public static Topology createTopology(){
@@ -28,10 +27,10 @@ public class StudController {
         // 1 - stream from Kafka
 
        // Stud student = new Stud();
-        KStream<String, String> textLines = builder.stream("spring-input-topicc");
+        KStream<String, String> textLines = builder.stream("springg-inputt-topicc");
         KStream<String, String> wordCounts = textLines.filter((key, value) -> value.contains("Pass")== true);
 
-        wordCounts.to("spring-output-topicc", Produced.with(Serdes.String(), Serdes.String()));
+        wordCounts.to("springg-outputt-topicc", Produced.with(Serdes.String(), Serdes.String()));
 
         wordCounts.foreach((key,value) -> new Stud(key,value));
 
