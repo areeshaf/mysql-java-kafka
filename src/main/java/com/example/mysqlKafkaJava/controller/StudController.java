@@ -1,7 +1,7 @@
 package com.example.mysqlKafkaJava.controller;
 
 import com.example.mysqlKafkaJava.model.Stud;
-import com.example.mysqlKafkaJava.repository.StudRepo;
+//import com.example.mysqlKafkaJava.repository.StudRepo;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -11,36 +11,56 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
+import javax.annotation.PostConstruct;
 import java.util.Properties;
 
-@RestController
+@Component
 public class StudController {
 
+
+
+
+
+//    public static Topology createTopology(){
+//        StreamsBuilder builder = new StreamsBuilder();
+//        // 1 - stream from Kafka
+//
+//       // Stud student = new Stud();
+//        KStream<String, String> textLines = builder.stream("springg-inputt-topicc");
+//        KStream<String, String> wordCounts = textLines.filter((key, value) -> value.contains("Pass")== true);
+//
+//        wordCounts.to("springg-outputt-topicc", Produced.with(Serdes.String(), Serdes.String()));
+//
+//        wordCounts.foreach((key,value) -> new Stud(key,value));
+//
+//
+//        return builder.build();
+//    }
+
+
+
+//    @PostConstruct
+//    private void home(){
+//
+//
+//
+//    }
+
+
+
+
+    Processor processor;
     @Autowired
-    StudRepo studRepo;
-
-    public static Topology createTopology(){
-        StreamsBuilder builder = new StreamsBuilder();
-        // 1 - stream from Kafka
-
-       // Stud student = new Stud();
-        KStream<String, String> textLines = builder.stream("springg-inputt-topicc");
-        KStream<String, String> wordCounts = textLines.filter((key, value) -> value.contains("Pass")== true);
-
-        wordCounts.to("springg-outputt-topicc", Produced.with(Serdes.String(), Serdes.String()));
-
-        wordCounts.foreach((key,value) -> new Stud(key,value));
-
-
-        return builder.build();
+    public StudController(Processor processor){
+        this.processor=processor;
     }
 
 
-    public void home(Stud stud){
-
+    public void consume() {
         Properties properties = new Properties();
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "record-application");
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -49,9 +69,12 @@ public class StudController {
         properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
         //RecordApp recordApp = new RecordApp();
-        KafkaStreams streams = new KafkaStreams(StudController.createTopology(), properties);
+
+        Topology topology = new Topology().addSource("Input topic", "springg-inputt-topic")
+                .addProcessor("PROCESS_ORG-SRCH", () -> processor, "Input topic");
+        KafkaStreams streams = new KafkaStreams(topology, properties);
         streams.start();
-        studRepo.save(stud);
+
 
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
@@ -65,7 +88,6 @@ public class StudController {
                 break;
             }
         }
-
     }
 
     //studRepo.save()

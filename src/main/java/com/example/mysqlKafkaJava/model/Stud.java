@@ -1,12 +1,12 @@
 package com.example.mysqlKafkaJava.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+//import javax.persistence.Entity;
+//import javax.persistence.Id;
 
-@Entity
+//@Entity
 public class Stud {
 
-    @Id
+   // @Id
     private String Stud_id;
     private String Stud_status;
 

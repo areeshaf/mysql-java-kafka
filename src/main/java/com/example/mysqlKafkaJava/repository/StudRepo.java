@@ -1,7 +1,7 @@
 package com.example.mysqlKafkaJava.repository;
 
 import com.example.mysqlKafkaJava.model.Stud;
-import org.springframework.data.repository.CrudRepository;
+//import org.springframework.data.repository.CrudRepository;
 
-public interface StudRepo extends CrudRepository<Stud, String> {
-}
+//public interface StudRepo extends CrudRepository<Stud, String> {
+//}
